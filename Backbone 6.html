@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#4FC3F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Backbone">
+    <meta name="apple-mobile-web-app-title" content="ParaPal">
     <link rel="manifest" href="manifest.json">
-    <title>Backbone - Health Manager</title>
+    <title>ParaPal - Your Health Companion</title>
     <style>
         * {
             margin: 0;
@@ -38,9 +38,25 @@
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
-            color: #2c3e50;
+            background: linear-gradient(135deg, #4FC3F7 0%, #26A69A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h1 span {
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .log-visit-hint {
+            font-size: 14px;
+            color: #b0bec5;
+            margin-top: 16px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .header-right {
@@ -796,7 +812,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🦴 Backbone</h1>
+        <h1>🤝 ParaPal</h1>
         <div class="header-right">
             <div id="testBadge" class="test-badge" style="display: none;">TEST MODE</div>
             <button class="settings-btn" onclick="openSettings()">⚙️</button>
@@ -874,6 +890,7 @@
                 <div id="toiletStatus" class="timer-status">Not started</div>
                 <div id="toiletOverdue" class="overdue-text" style="display: none;"></div>
                 <div id="toiletModifier" class="modifier-text" style="display: none;"></div>
+                <div class="log-visit-hint">tap below to log visit</div>
                 <div class="last-log-box">
                     <div id="toiletLastLog">Last visit: Never</div>
                 </div>
@@ -1093,9 +1110,12 @@
             selectedFrequency: 'daily'
         };
 
-        // Touch handling for swipe
+        // Touch handling for swipe - improved sensitivity
         let touchStartX = 0;
+        let touchStartY = 0;
         let touchEndX = 0;
+        let touchEndY = 0;
+        let isSwiping = false;
 
         function init() {
             loadState();
@@ -1110,11 +1130,20 @@
             const mainContent = document.querySelector('.main-content');
 
             mainContent.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                isSwiping = true;
+            }, { passive: true });
+
+            mainContent.addEventListener('touchmove', (e) => {
+                if (!isSwiping) return;
+                touchEndX = e.touches[0].clientX;
+                touchEndY = e.touches[0].clientY;
             }, { passive: true });
 
             mainContent.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
+                if (!isSwiping) return;
+                isSwiping = false;
                 handleSwipe();
             }, { passive: true });
         }
@@ -1122,18 +1151,28 @@
         function handleSwipe() {
             const pages = ['home', 'bladder', 'pressure', 'meds'];
             const currentIndex = pages.indexOf(state.currentPage);
-            const swipeThreshold = 50;
-            const diff = touchStartX - touchEndX;
 
-            if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0 && currentIndex < pages.length - 1) {
+            // Lower threshold for easier swiping
+            const swipeThreshold = 30;
+            const diffX = touchStartX - touchEndX;
+            const diffY = Math.abs(touchStartY - touchEndY);
+
+            // Only swipe if horizontal movement is greater than vertical (not scrolling)
+            if (Math.abs(diffX) > swipeThreshold && Math.abs(diffX) > diffY) {
+                if (diffX > 0 && currentIndex < pages.length - 1) {
                     // Swipe left - go to next page
                     showPage(pages[currentIndex + 1]);
-                } else if (diff < 0 && currentIndex > 0) {
+                } else if (diffX < 0 && currentIndex > 0) {
                     // Swipe right - go to previous page
                     showPage(pages[currentIndex - 1]);
                 }
             }
+
+            // Reset values
+            touchStartX = 0;
+            touchStartY = 0;
+            touchEndX = 0;
+            touchEndY = 0;
         }
 
         function loadState() {
@@ -1207,7 +1246,7 @@
                 const permission = await Notification.requestPermission();
                 updateNotificationStatus(permission);
                 if (permission === 'granted') {
-                    showNotification('Backbone', 'Notifications enabled!', false);
+                    showNotification('ParaPal', 'Notifications enabled!', false);
                 }
             }
         }
@@ -1263,21 +1302,21 @@
 
             // 30 minute warning
             if (remaining <= 30 * 60 * 1000 && remaining > 15 * 60 * 1000 && !state.warnings.thirty) {
-                showNotification('⏰ Backbone', 'Go in 30 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 30 minutes', false);
                 state.warnings.thirty = true;
                 saveState();
             }
 
             // 15 minute warning
             if (remaining <= 15 * 60 * 1000 && remaining > 5 * 60 * 1000 && !state.warnings.fifteen) {
-                showNotification('⏰ Backbone', 'Go in 15 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 15 minutes', false);
                 state.warnings.fifteen = true;
                 saveState();
             }
 
             // 5 minute warning
             if (remaining <= 5 * 60 * 1000 && remaining > 0 && !state.warnings.five) {
-                showNotification('⏰ Backbone', 'Go in 5 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 5 minutes', false);
                 state.warnings.five = true;
                 saveState();
             }

@@ -82,18 +82,82 @@
             padding: 20px;
             max-width: 600px;
             margin: 0 auto;
+            position: relative;
+            overflow: hidden;
         }
 
-        .page-container {
-            display: flex;
-            transition: transform 0.3s ease;
-            width: 400%;
-        }
-
+        /* Page transitions - smooth and bubbly */
         .page {
-            width: 25%;
-            flex-shrink: 0;
-            min-height: calc(100vh - 160px);
+            display: none;
+            animation: pageIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.92) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes slideInRight {
+            0% {
+                opacity: 0;
+                transform: translateX(-60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .page.slide-left {
+            animation: slideInLeft 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .page.slide-right {
+            animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Swipe indicator dots */
+        .swipe-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 0;
+            margin-bottom: 16px;
+        }
+
+        .swipe-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .swipe-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: #4FC3F7;
         }
 
         .timer-section {
@@ -252,7 +316,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,7 +329,7 @@
         }
 
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
 
         .btn-secondary {
@@ -274,7 +338,7 @@
         }
 
         .btn-secondary:active {
-            transform: scale(0.98);
+            transform: scale(0.96);
         }
 
         /* Quick volume buttons for bladder */
@@ -297,11 +361,11 @@
             font-weight: 700;
             color: #2c3e50;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .volume-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.92);
             background: #4FC3F7;
             color: white;
         }
@@ -332,12 +396,13 @@
             background: white;
             font-size: 24px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .drink-btn:active {
-            transform: scale(0.95);
-            background: #f8f9fa;
+            transform: scale(0.92);
+            background: #FFF3E0;
+            border-color: #FFB300;
         }
 
         .stats-grid {
@@ -390,12 +455,13 @@
             color: #6c757d;
             font-size: 22px;
             cursor: pointer;
-            transition: color 0.3s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
         }
 
         .nav-btn.active {
             color: #4FC3F7;
+            transform: scale(1.1);
         }
 
         .nav-btn.meds-btn.active {
@@ -449,7 +515,7 @@
             padding: 24px 20px 40px;
             z-index: 201;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             max-height: 85vh;
             overflow-y: auto;
         }
@@ -543,27 +609,26 @@
             transform: translateX(28px);
         }
 
-        /* Volume selector buttons */
-        .volume-selector {
+        /* Volume input in settings */
+        .volume-input-group {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
 
-        .volume-option {
-            padding: 8px 16px;
+        .volume-input {
+            width: 70px;
+            padding: 8px 12px;
             border: 2px solid #e9ecef;
             border-radius: 12px;
-            background: white;
             font-size: 14px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            text-align: center;
         }
 
-        .volume-option.active {
+        .volume-input:focus {
+            outline: none;
             border-color: #4FC3F7;
-            background: #E1F5FE;
-            color: #0288D1;
         }
 
         /* Medication page styles */
@@ -581,12 +646,53 @@
             font-weight: 700;
         }
 
+        /* Big tappable medication cards */
         .med-card {
             background: white;
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid transparent;
+            min-height: 100px;
+        }
+
+        .med-card:active {
+            transform: scale(0.98);
+        }
+
+        .med-card.taken {
+            background: linear-gradient(135deg, #C8E6C9 0%, #A5D6A7 100%);
+            border-color: #4CAF50;
+        }
+
+        .med-checkbox {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+
+        .med-card.taken .med-checkbox {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .med-info {
+            flex: 1;
         }
 
         .med-name {
@@ -595,10 +701,18 @@
             color: #2c3e50;
         }
 
+        .med-card.taken .med-name {
+            color: #1B5E20;
+        }
+
         .med-dose {
             font-size: 14px;
             color: #6c757d;
             margin-top: 4px;
+        }
+
+        .med-card.taken .med-dose {
+            color: #2E7D32;
         }
 
         .med-next {
@@ -606,6 +720,20 @@
             color: #26A69A;
             font-weight: 500;
             margin-top: 8px;
+        }
+
+        .med-card.taken .med-next {
+            color: #1B5E20;
+        }
+
+        .med-delete {
+            background: none;
+            border: none;
+            color: #ef5350;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            opacity: 0.6;
         }
 
         .add-med-btn {
@@ -626,11 +754,11 @@
             align-items: center;
             justify-content: center;
             z-index: 50;
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .add-med-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.9) rotate(90deg);
         }
 
         /* Add Medication Modal */
@@ -644,7 +772,7 @@
             padding: 24px 20px 40px;
             z-index: 201;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .add-med-modal.active {
@@ -786,16 +914,6 @@
             background: #EDE7F6;
             color: #7E57C2;
         }
-
-        .delete-med-btn {
-            background: none;
-            border: none;
-            color: #ef5350;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 4px 8px;
-            float: right;
-        }
     </style>
 </head>
 <body>
@@ -808,6 +926,14 @@
     </div>
 
     <div class="main-content">
+        <!-- Swipe indicator -->
+        <div class="swipe-indicator">
+            <div class="swipe-dot active" data-page="home"></div>
+            <div class="swipe-dot" data-page="bladder"></div>
+            <div class="swipe-dot" data-page="pressure"></div>
+            <div class="swipe-dot" data-page="meds"></div>
+        </div>
+
         <div id="homePage" class="page active">
             <div id="notificationInfo" class="notification-info" style="display: none;"></div>
             <div id="warningBanner" style="display: none;"></div>
@@ -835,19 +961,6 @@
                         <div class="stat-value" id="statDrinks">0</div>
                         <div class="stat-label">Drinks</div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">🍺</div>
-                    <div class="card-title">Log Drink (Reduces Timer)</div>
-                </div>
-                <div class="drink-buttons">
-                    <button class="drink-btn" onclick="logDrink('beer')">🍺<br><small style="font-size: 10px;">-40min</small></button>
-                    <button class="drink-btn" onclick="logDrink('wine')">🍷<br><small style="font-size: 10px;">-45min</small></button>
-                    <button class="drink-btn" onclick="logDrink('spirits')">🥃<br><small style="font-size: 10px;">-55min</small></button>
                 </div>
             </div>
 
@@ -884,16 +997,21 @@
             </div>
 
             <div class="section-title">Quick Log - Tap to Log & Reset</div>
-            <div class="volume-buttons">
-                <button class="volume-btn" onclick="quickLogBladder(200)">
-                    200<small>ml</small>
-                </button>
-                <button class="volume-btn" onclick="quickLogBladder(350)">
-                    350<small>ml</small>
-                </button>
-                <button class="volume-btn" onclick="quickLogBladder(600)">
-                    600<small>ml</small>
-                </button>
+            <div class="volume-buttons" id="volumeButtons">
+                <!-- Buttons will be rendered by JS based on settings -->
+            </div>
+
+            <!-- Alcohol buttons on Bladder page -->
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <div class="card-icon">🍺</div>
+                    <div class="card-title">Log Drink (Reduces Timer)</div>
+                </div>
+                <div class="drink-buttons">
+                    <button class="drink-btn" onclick="logDrink('beer')">🍺<br><small style="font-size: 10px;">-40min</small></button>
+                    <button class="drink-btn" onclick="logDrink('wine')">🍷<br><small style="font-size: 10px;">-45min</small></button>
+                    <button class="drink-btn" onclick="logDrink('spirits')">🥃<br><small style="font-size: 10px;">-55min</small></button>
+                </div>
             </div>
         </div>
 
@@ -908,6 +1026,14 @@
                 <div class="last-log-box">
                     <div id="pressureLastLog">Last release: Never</div>
                 </div>
+            </div>
+
+            <!-- Quick interval buttons -->
+            <div class="section-title">Timer Duration</div>
+            <div class="volume-buttons" style="margin-bottom: 20px;">
+                <button class="volume-btn" onclick="setPressureAndStart(2)" id="pressBtn2">2<small>hours</small></button>
+                <button class="volume-btn" onclick="setPressureAndStart(3)" id="pressBtn3">3<small>hours</small></button>
+                <button class="volume-btn" onclick="setPressureAndStart(4)" id="pressBtn4">4<small>hours</small></button>
             </div>
 
             <div class="card">
@@ -975,27 +1101,36 @@
             </label>
         </div>
 
+        <div class="section-title" style="margin-top: 20px;">Bladder Volume Buttons (ml)</div>
+        <div class="setting-row">
+            <div class="volume-input-group">
+                <input type="number" id="vol1" class="volume-input" value="200" min="50" max="1000" onchange="updateVolumeButtons()">
+                <input type="number" id="vol2" class="volume-input" value="350" min="50" max="1000" onchange="updateVolumeButtons()">
+                <input type="number" id="vol3" class="volume-input" value="600" min="50" max="1000" onchange="updateVolumeButtons()">
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 20px;">Pressure Release Interval</div>
         <div class="setting-row">
             <div>
-                <div class="setting-label">Default Void Volume</div>
-                <div class="setting-desc">Quick selection preset</div>
+                <div class="setting-label">Default Hours</div>
+                <div class="setting-desc">Quick selection on Pressure page</div>
             </div>
-            <div class="volume-selector">
-                <button class="volume-option" data-volume="200" onclick="setDefaultVolume(200)">200</button>
-                <button class="volume-option active" data-volume="350" onclick="setDefaultVolume(350)">350</button>
-                <button class="volume-option" data-volume="600" onclick="setDefaultVolume(600)">600</button>
+            <div class="interval-selector">
+                <button class="interval-option" data-interval="2" onclick="setPressureInterval(2)">2h</button>
+                <button class="interval-option active" data-interval="3" onclick="setPressureInterval(3)">3h</button>
+                <button class="interval-option" data-interval="4" onclick="setPressureInterval(4)">4h</button>
             </div>
         </div>
 
         <div class="setting-row">
             <div>
-                <div class="setting-label">Pressure Interval</div>
-                <div class="setting-desc">Hours between releases</div>
+                <div class="setting-label">Custom Interval</div>
+                <div class="setting-desc">Set your own hours</div>
             </div>
-            <div class="interval-selector">
-                <button class="interval-option" data-interval="1" onclick="setPressureInterval(1)">1h</button>
-                <button class="interval-option active" data-interval="2" onclick="setPressureInterval(2)">2h</button>
-                <button class="interval-option" data-interval="3" onclick="setPressureInterval(3)">3h</button>
+            <div class="volume-input-group">
+                <input type="number" id="customPressureInterval" class="volume-input" value="2" min="1" max="8" onchange="setCustomPressureInterval()">
+                <span style="color: #6c757d;">hrs</span>
             </div>
         </div>
 
@@ -1076,7 +1211,7 @@
             pressureStarted: false,
             settings: {
                 warningEnabled: true,
-                defaultVolume: 350,
+                volumes: [200, 350, 600],
                 pressureInterval: 2
             },
             history: [],
@@ -1094,6 +1229,7 @@
                 final: false
             },
             currentPage: 'home',
+            previousPage: null,
             selectedFrequency: 'daily'
         };
 
@@ -1105,6 +1241,7 @@
             loadState();
             setupNotifications();
             setupSwipeNavigation();
+            renderVolumeButtons();
             updateDisplay();
             setInterval(updateDisplay, 1000);
             setInterval(checkAndSendNotifications, 5000);
@@ -1131,11 +1268,9 @@
 
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0 && currentIndex < pages.length - 1) {
-                    // Swipe left - go to next page
-                    showPage(pages[currentIndex + 1]);
+                    showPage(pages[currentIndex + 1], 'left');
                 } else if (diff < 0 && currentIndex > 0) {
-                    // Swipe right - go to previous page
-                    showPage(pages[currentIndex - 1]);
+                    showPage(pages[currentIndex - 1], 'right');
                 }
             }
         }
@@ -1145,15 +1280,22 @@
             if (saved) {
                 const loaded = JSON.parse(saved);
                 state = { ...state, ...loaded };
+
+                // Ensure settings has volumes array
+                if (!state.settings.volumes) {
+                    state.settings.volumes = [200, 350, 600];
+                }
+
                 document.getElementById('testModeToggle').checked = state.testMode;
                 document.getElementById('warningToggle').checked = state.settings.warningEnabled;
 
-                // Update volume selector
-                document.querySelectorAll('.volume-option').forEach(btn => {
-                    btn.classList.toggle('active', parseInt(btn.dataset.volume) === state.settings.defaultVolume);
-                });
+                // Load volume settings
+                document.getElementById('vol1').value = state.settings.volumes[0];
+                document.getElementById('vol2').value = state.settings.volumes[1];
+                document.getElementById('vol3').value = state.settings.volumes[2];
 
-                // Update interval selector
+                // Load pressure interval
+                document.getElementById('customPressureInterval').value = state.settings.pressureInterval;
                 document.querySelectorAll('.interval-option').forEach(btn => {
                     btn.classList.toggle('active', parseInt(btn.dataset.interval) === state.settings.pressureInterval);
                 });
@@ -1174,20 +1316,46 @@
             saveState();
         }
 
-        function setDefaultVolume(volume) {
-            state.settings.defaultVolume = volume;
-            document.querySelectorAll('.volume-option').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.volume) === volume);
-            });
+        function updateVolumeButtons() {
+            state.settings.volumes = [
+                parseInt(document.getElementById('vol1').value) || 200,
+                parseInt(document.getElementById('vol2').value) || 350,
+                parseInt(document.getElementById('vol3').value) || 600
+            ];
             saveState();
+            renderVolumeButtons();
+        }
+
+        function renderVolumeButtons() {
+            const container = document.getElementById('volumeButtons');
+            container.innerHTML = state.settings.volumes.map(vol => `
+                <button class="volume-btn" onclick="quickLogBladder(${vol})">
+                    ${vol}<small>ml</small>
+                </button>
+            `).join('');
         }
 
         function setPressureInterval(hours) {
             state.settings.pressureInterval = hours;
+            document.getElementById('customPressureInterval').value = hours;
             document.querySelectorAll('.interval-option').forEach(btn => {
                 btn.classList.toggle('active', parseInt(btn.dataset.interval) === hours);
             });
-            if (state.pressureStarted) startPressureTimer();
+            saveState();
+        }
+
+        function setCustomPressureInterval() {
+            const hours = parseInt(document.getElementById('customPressureInterval').value) || 2;
+            state.settings.pressureInterval = hours;
+            document.querySelectorAll('.interval-option').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.interval) === hours);
+            });
+            saveState();
+        }
+
+        function setPressureAndStart(hours) {
+            state.settings.pressureInterval = hours;
+            startPressureTimer();
             saveState();
         }
 
@@ -1240,7 +1408,7 @@
                     requireInteraction: vibrateLong,
                     tag: 'backbone-alert',
                     renotify: true,
-                    silent: vibrateLong // No sound for final alert, just vibration
+                    silent: vibrateLong
                 });
 
                 if ('vibrate' in navigator) {
@@ -1265,35 +1433,30 @@
 
             const remaining = state.toiletEndTime - Date.now();
 
-            // 30 minute warning
             if (remaining <= 30 * 60 * 1000 && remaining > 15 * 60 * 1000 && !state.warnings.thirty) {
                 showNotification('⏰ Backbone', 'Go in 30 minutes', false);
                 state.warnings.thirty = true;
                 saveState();
             }
 
-            // 15 minute warning
             if (remaining <= 15 * 60 * 1000 && remaining > 5 * 60 * 1000 && !state.warnings.fifteen) {
                 showNotification('⏰ Backbone', 'Go in 15 minutes', false);
                 state.warnings.fifteen = true;
                 saveState();
             }
 
-            // 5 minute warning
             if (remaining <= 5 * 60 * 1000 && remaining > 0 && !state.warnings.five) {
                 showNotification('⏰ Backbone', 'Go in 5 minutes', false);
                 state.warnings.five = true;
                 saveState();
             }
 
-            // Final alert - vibrate like a call, no ringtone
             if (remaining <= 0 && !state.warnings.final) {
                 showNotification('🚨 TIME TO GO', 'Tap to log your visit', true);
                 state.warnings.final = true;
                 saveState();
             }
 
-            // Reset warnings when timer has more than 30 mins
             if (remaining > 30 * 60 * 1000) {
                 state.warnings = { thirty: false, fifteen: false, five: false, final: false };
             }
@@ -1416,7 +1579,6 @@
             }
         }
 
-        // Quick log for bladder - tap once, logs, resets timer
         function quickLogBladder(volume) {
             state.stats.toiletVisits++;
             state.stats.totalVolume += volume;
@@ -1431,7 +1593,6 @@
             saveState();
             updateStats();
 
-            // Brief visual feedback
             showNotification('Logged!', `🚽 ${volume}ml - Timer reset`, false);
         }
 
@@ -1505,19 +1666,32 @@
             document.getElementById('historyList').innerHTML = historyHTML || '<p style="text-align: center; color: #6c757d; padding: 20px;">No history yet</p>';
         }
 
-        function showPage(page) {
+        function showPage(page, direction = null) {
+            const pages = ['home', 'bladder', 'pressure', 'meds'];
+            const oldIndex = pages.indexOf(state.currentPage);
+            const newIndex = pages.indexOf(page);
+
+            // Determine direction if not provided
+            if (!direction) {
+                direction = newIndex > oldIndex ? 'left' : 'right';
+            }
+
+            state.previousPage = state.currentPage;
             state.currentPage = page;
 
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active', 'slide-left', 'slide-right');
+            });
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.swipe-dot').forEach(dot => dot.classList.remove('active'));
 
-            const pages = ['home', 'bladder', 'pressure', 'meds'];
-            const index = pages.indexOf(page);
+            const pageEl = document.getElementById(page + 'Page');
+            pageEl.classList.add('active');
+            pageEl.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
 
-            document.getElementById(page + 'Page').classList.add('active');
-            document.querySelectorAll('.nav-btn')[index].classList.add('active');
+            document.querySelectorAll('.nav-btn')[newIndex].classList.add('active');
+            document.querySelectorAll('.swipe-dot')[newIndex].classList.add('active');
 
-            // Show/hide add med button
             document.getElementById('addMedBtn').style.display = page === 'meds' ? 'flex' : 'none';
         }
 
@@ -1541,7 +1715,6 @@
         function closeAddMedModal() {
             document.getElementById('addMedOverlay').classList.remove('active');
             document.getElementById('addMedModal').classList.remove('active');
-            // Reset form
             document.getElementById('medName').value = '';
             document.getElementById('medDose').value = '';
             document.getElementById('medTime').value = '08:00';
@@ -1575,7 +1748,9 @@
                 dose: dose,
                 unit: unit,
                 frequency: state.selectedFrequency,
-                time: time
+                time: time,
+                taken: false,
+                takenAt: null
             };
 
             state.medications.push(med);
@@ -1584,7 +1759,18 @@
             closeAddMedModal();
         }
 
-        function deleteMedication(id) {
+        function toggleMedTaken(id) {
+            const med = state.medications.find(m => m.id === id);
+            if (med) {
+                med.taken = !med.taken;
+                med.takenAt = med.taken ? new Date().toLocaleString() : null;
+                saveState();
+                renderMedications();
+            }
+        }
+
+        function deleteMedication(id, event) {
+            event.stopPropagation();
             state.medications = state.medications.filter(m => m.id !== id);
             saveState();
             renderMedications();
@@ -1611,11 +1797,16 @@
             };
 
             medsList.innerHTML = state.medications.map(med => `
-                <div class="med-card">
-                    <button class="delete-med-btn" onclick="deleteMedication(${med.id})">×</button>
-                    <div class="med-name">${med.name}</div>
-                    <div class="med-dose">${med.dose} ${med.unit} - ${freqLabels[med.frequency]}</div>
-                    <div class="med-next">Next at ${med.time}</div>
+                <div class="med-card ${med.taken ? 'taken' : ''}" onclick="toggleMedTaken(${med.id})">
+                    <div class="med-checkbox">
+                        ${med.taken ? '✓' : ''}
+                    </div>
+                    <div class="med-info">
+                        <div class="med-name">${med.name}</div>
+                        <div class="med-dose">${med.dose} ${med.unit} - ${freqLabels[med.frequency]}</div>
+                        <div class="med-next">${med.taken ? 'Taken at ' + med.takenAt : 'Next at ' + med.time}</div>
+                    </div>
+                    <button class="med-delete" onclick="deleteMedication(${med.id}, event)">×</button>
                 </div>
             `).join('');
         }

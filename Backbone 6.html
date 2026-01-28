@@ -84,16 +84,12 @@
             margin: 0 auto;
         }
 
-        .page-container {
-            display: flex;
-            transition: transform 0.3s ease;
-            width: 400%;
+        .page {
+            display: none;
         }
 
-        .page {
-            width: 25%;
-            flex-shrink: 0;
-            min-height: calc(100vh - 160px);
+        .page.active {
+            display: block;
         }
 
         .timer-section {

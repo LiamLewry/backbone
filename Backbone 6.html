@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4FC3F7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Backbone">
+    <link rel="manifest" href="manifest.json">
+    <title>Backbone - Health Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .test-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .main-content {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .timer-section {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .timer-label {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .circular-timer {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 24px;
+        }
+
+        .timer-circle {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .timer-bg {
+            fill: none;
+            stroke: #e9ecef;
+            stroke-width: 12;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke 0.3s ease, stroke-dashoffset 0.5s ease;
+        }
+
+        .water-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+
+        .water {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, #4FC3F7 0%, #81D4FA 100%);
+            transition: height 1s ease;
+        }
+
+        .water::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -50%;
+            width: 200%;
+            height: 40px;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, transparent 70%);
+            animation: wave 3s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(50%); }
+        }
+
+        .timer-time {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c3e50;
+            z-index: 10;
+            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
+        }
+
+        .timer-status {
+            font-size: 16px;
+            color: #495057;
+            margin-top: 8px;
+        }
+
+        .overdue-text {
+            color: #ef5350;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: 12px;
+        }
+
+        .modifier-text {
+            color: #FF9800;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 8px;
+            background: #FFF3E0;
+            border-radius: 8px;
+        }
+
+        .last-log-box {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 16px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 32px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #6c757d;
+            min-width: 80px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4FC3F7;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4FC3F7 0%, #03A9F4 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #B39DDB 0%, #9575CD 100%);
+            color: white;
+        }
+
+        .drink-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .drink-btn {
+            padding: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 16px;
+            background: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .drink-btn:active {
+            transform: scale(0.95);
+            background: #f8f9fa;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-box {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            color: #6c757d;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-btn.active {
+            color: #4FC3F7;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4FC3F7;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .setting-desc {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .history-item {
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .history-time {
+            font-size: 14px;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .history-detail {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .warning-banner {
+            background: linear-gradient(135deg, #FFE082 0%, #FFB300 100%);
+            color: #5d4037;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .overdue-banner {
+            background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+            color: white;
+        }
+
+        .notification-info {
+            background: #E3F2FD;
+            color: #1565C0;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🦴 Backbone</h1>
+        <div id="testBadge" class="test-badge" style="display: none;">TEST MODE</div>
+    </div>
+
+    <div class="main-content">
+        <div id="homePage" class="page active">
+            <div id="notificationInfo" class="notification-info" style="display: none;"></div>
+            <div id="warningBanner" style="display: none;"></div>
+            
+            <div class="timer-section">
+                <div class="timer-label">🚽 Toilet Timer</div>
+                <div class="circular-timer">
+                    <svg class="timer-circle" viewBox="0 0 200 200">
+                        <circle class="timer-bg" cx="100" cy="100" r="90"></circle>
+                        <circle id="toiletProgress" class="timer-progress" cx="100" cy="100" r="90" 
+                                stroke="#4FC3F7" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="water-container">
+                        <div id="toiletWater" class="water" style="height: 0%"></div>
+                    </div>
+                    <div id="toiletDisplay" class="timer-time">--:--:--</div>
+                </div>
+                <div id="toiletStatus" class="timer-status">Not started</div>
+                <div id="toiletOverdue" class="overdue-text" style="display: none;"></div>
+                <div id="toiletModifier" class="modifier-text" style="display: none;"></div>
+                <div class="last-log-box">
+                    <div id="toiletLastLog">Last visit: Never</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🚽</div>
+                    <div class="card-title">Log Toilet Visit</div>
+                </div>
+                <div class="input-group">
+                    <label>Volume:</label>
+                    <input type="number" id="volumeInput" value="350" min="0" max="1000" step="50">
+                    <span>ml</span>
+                </div>
+                <button class="btn btn-primary" onclick="logToiletVisit()">
+                    ✓ Log Visit
+                </button>
+            </div>
+
+            <div class="timer-section" style="margin-top: 32px;">
+                <div class="timer-label">🪑 Pressure Release Timer</div>
+                <div style="text-align: center; margin: 16px 0;">
+                    <div style="font-size: 48px; font-weight: 700; color: #9575CD;" id="pressureDisplay">--:--:--</div>
+                    <div id="pressureStatus" style="font-size: 14px; color: #6c757d; margin-top: 8px;">Not started</div>
+                    <div id="pressureOverdue" class="overdue-text" style="display: none;"></div>
+                </div>
+                <div class="last-log-box">
+                    <div id="pressureLastLog">Last release: Never</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🪑</div>
+                    <div class="card-title">Log Pressure Release</div>
+                </div>
+                <button class="btn btn-secondary" onclick="logPressureRelease()">
+                    ✓ Pressure Released
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">🍺</div>
+                    <div class="card-title">Log Drink (Reduces Timer)</div>
+                </div>
+                <div class="drink-buttons">
+                    <button class="drink-btn" onclick="logDrink('beer')">🍺<br><small style="font-size: 10px;">-40min</small></button>
+                    <button class="drink-btn" onclick="logDrink('wine')">🍷<br><small style="font-size: 10px;">-45min</small></button>
+                    <button class="drink-btn" onclick="logDrink('spirits')">🥃<br><small style="font-size: 10px;">-55min</small></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="statsPage" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Today's Stats</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="statToiletVisits">0</div>
+                        <div class="stat-label">Toilet Visits</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statTotalVolume">0</div>
+                        <div class="stat-label">Total Volume (ml)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statPressureReleases">0</div>
+                        <div class="stat-label">Pressure Releases</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statDrinks">0</div>
+                        <div class="stat-label">Drinks Logged</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Recent History</div>
+                </div>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <div id="settingsPage" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">⚙️</div>
+                    <div class="card-title">Settings</div>
+                </div>
+                
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Test Mode</div>
+                        <div class="setting-desc">2 minute timers for testing</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="testModeToggle" onchange="toggleTestMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Warning Notifications</div>
+                        <div class="setting-desc">Alert before timer ends</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="warningToggle" checked onchange="saveSettings()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Warning Time</div>
+                        <div class="setting-desc">Minutes before due (5-10 recommended)</div>
+                    </div>
+                    <input type="number" id="warningTime" value="10" min="5" max="60" 
+                           style="width: 80px; padding: 8px; border: 2px solid #e9ecef; border-radius: 8px;"
+                           onchange="saveSettings()">
+                </div>
+
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Default Volume</div>
+                        <div class="setting-desc">ml per visit</div>
+                    </div>
+                    <input type="number" id="defaultVolume" value="350" min="100" max="1000" step="50"
+                           style="width: 80px; padding: 8px; border: 2px solid #e9ecef; border-radius: 8px;"
+                           onchange="saveSettings()">
+                </div>
+
+                <button class="btn btn-primary" onclick="requestNotificationPermission()" style="margin-top: 20px; background: linear-gradient(135deg, #4FC3F7 0%, #03A9F4 100%);">
+                    🔔 Enable Notifications
+                </button>
+
+                <button class="btn btn-primary" onclick="clearAllData()" style="margin-top: 12px; background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);">
+                    🗑️ Clear All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="showPage('home')">
+            <div>🏠</div>
+            <div class="nav-label">Home</div>
+        </button>
+        <button class="nav-btn" onclick="showPage('stats')">
+            <div>📊</div>
+            <div class="nav-label">Stats</div>
+        </button>
+        <button class="nav-btn" onclick="showPage('settings')">
+            <div>⚙️</div>
+            <div class="nav-label">Settings</div>
+        </button>
+    </div>
+
+    <script>
+        const ALCOHOL_MODIFIERS = {
+            beer: 40,
+            wine: 45,
+            spirits: 55
+        };
+
+        let state = {
+            testMode: false,
+            toiletEndTime: null,
+            pressureEndTime: null,
+            toiletLastLog: null,
+            pressureLastLog: null,
+            toiletStarted: false,
+            pressureStarted: false,
+            settings: {
+                warningEnabled: true,
+                warningMinutes: 10,
+                defaultVolume: 350
+            },
+            history: [],
+            stats: {
+                toiletVisits: 0,
+                totalVolume: 0,
+                pressureReleases: 0,
+                drinks: 0
+            },
+            warningShown: false,
+            finalNotificationShown: false
+        };
+
+        function init() {
+            loadState();
+            setupNotifications();
+            updateDisplay();
+            setInterval(updateDisplay, 1000);
+            setInterval(checkAndSendNotifications, 5000);
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('backboneState');
+            if (saved) {
+                const loaded = JSON.parse(saved);
+                state = { ...state, ...loaded };
+                document.getElementById('testModeToggle').checked = state.testMode;
+                document.getElementById('warningToggle').checked = state.settings.warningEnabled;
+                document.getElementById('warningTime').value = state.settings.warningMinutes;
+                document.getElementById('defaultVolume').value = state.settings.defaultVolume;
+                document.getElementById('volumeInput').value = state.settings.defaultVolume;
+                
+                if (state.testMode) {
+                    document.getElementById('testBadge').style.display = 'block';
+                }
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('backboneState', JSON.stringify(state));
+        }
+
+        function saveSettings() {
+            state.settings.warningEnabled = document.getElementById('warningToggle').checked;
+            state.settings.warningMinutes = parseInt(document.getElementById('warningTime').value);
+            state.settings.defaultVolume = parseInt(document.getElementById('defaultVolume').value);
+            document.getElementById('volumeInput').value = state.settings.defaultVolume;
+            saveState();
+        }
+
+        function toggleTestMode() {
+            state.testMode = document.getElementById('testModeToggle').checked;
+            document.getElementById('testBadge').style.display = state.testMode ? 'block' : 'none';
+            if (state.toiletStarted) startToiletTimer();
+            if (state.pressureStarted) startPressureTimer();
+            saveState();
+        }
+
+        async function setupNotifications() {
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                updateNotificationStatus(permission);
+            }
+        }
+
+        async function requestNotificationPermission() {
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                updateNotificationStatus(permission);
+                if (permission === 'granted') {
+                    showNotification('Backbone', 'Notifications enabled! 🎉', true);
+                }
+            }
+        }
+
+        function updateNotificationStatus(permission) {
+            const infoDiv = document.getElementById('notificationInfo');
+            if (permission === 'granted') {
+                infoDiv.innerHTML = '✅ Notifications enabled';
+                infoDiv.style.background = '#C8E6C9';
+                infoDiv.style.color = '#2E7D32';
+            } else if (permission === 'denied') {
+                infoDiv.innerHTML = '❌ Notifications blocked';
+                infoDiv.style.background = '#FFCDD2';
+                infoDiv.style.color = '#C62828';
+            } else {
+                infoDiv.innerHTML = '🔔 Tap "Enable Notifications"';
+            }
+            infoDiv.style.display = 'block';
+        }
+
+        function showNotification(title, body, force = false) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification(title, {
+                    body: body,
+                    vibrate: [500, 250, 500],
+                    requireInteraction: true,
+                    tag: 'backbone-alert',
+                    renotify: true
+                });
+                
+                if ('vibrate' in navigator) {
+                    navigator.vibrate([500, 250, 500]);
+                }
+                
+                notification.onclick = function() {
+                    window.focus();
+                    this.close();
+                };
+                
+                return notification;
+            }
+            return null;
+        }
+
+        function checkAndSendNotifications() {
+            if (!state.toiletStarted) return;
+            
+            const remaining = state.toiletEndTime - Date.now();
+            const warningTime = state.settings.warningMinutes * 60 * 1000;
+            
+            if (state.settings.warningEnabled && remaining <= warningTime && remaining > 0 && !state.warningShown) {
+                showNotification('⏰ Backbone Warning', `${state.settings.warningMinutes} minutes until toilet visit!`, true);
+                state.warningShown = true;
+                saveState();
+            }
+            
+            if (remaining <= 0 && !state.finalNotificationShown) {
+                showNotification('🚨 Backbone Alert', 'Time for toilet visit NOW!', true);
+                state.finalNotificationShown = true;
+                saveState();
+            }
+            
+            if (remaining > warningTime) {
+                state.warningShown = false;
+                state.finalNotificationShown = false;
+            }
+        }
+
+        function startToiletTimer() {
+            const duration = state.testMode ? 2 * 60 * 1000 : 4 * 60 * 60 * 1000;
+            state.toiletEndTime = Date.now() + duration;
+            state.toiletStarted = true;
+            state.warningShown = false;
+            state.finalNotificationShown = false;
+            saveState();
+        }
+
+        function startPressureTimer() {
+            const duration = state.testMode ? 2 * 60 * 1000 : 2 * 60 * 60 * 1000;
+            state.pressureEndTime = Date.now() + duration;
+            state.pressureStarted = true;
+            saveState();
+        }
+
+        function updateDisplay() {
+            updateToiletTimer();
+            updatePressureTimer();
+            updateStats();
+        }
+
+        function formatTime(ms) {
+            const absMs = Math.abs(ms);
+            const hours = Math.floor(absMs / (60 * 60 * 1000));
+            const minutes = Math.floor((absMs % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((absMs % (60 * 1000)) / 1000);
+            return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function updateToiletTimer() {
+            if (!state.toiletStarted) {
+                document.getElementById('toiletDisplay').textContent = '--:--:--';
+                document.getElementById('toiletStatus').textContent = 'Not started';
+                document.getElementById('toiletWater').style.height = '0%';
+                return;
+            }
+
+            const remaining = state.toiletEndTime - Date.now();
+            const totalDuration = state.testMode ? 2 * 60 * 1000 : 4 * 60 * 60 * 1000;
+            const progress = Math.max(0, Math.min(1, remaining / totalDuration));
+            
+            if (remaining <= 0) {
+                const overdue = Math.abs(remaining);
+                document.getElementById('toiletDisplay').textContent = '0:00:00';
+                document.getElementById('toiletStatus').textContent = '⚠️ Time to go!';
+                document.getElementById('toiletOverdue').textContent = `OVERDUE: ${formatTime(overdue)}`;
+                document.getElementById('toiletOverdue').style.display = 'block';
+                document.getElementById('toiletProgress').style.stroke = '#ef5350';
+                document.getElementById('toiletWater').style.height = '100%';
+                
+                document.getElementById('warningBanner').innerHTML = '<div class="overdue-banner">🚨 TOILET VISIT OVERDUE!</div>';
+                document.getElementById('warningBanner').style.display = 'block';
+            } else {
+                document.getElementById('toiletDisplay').textContent = formatTime(remaining);
+                document.getElementById('toiletOverdue').style.display = 'none';
+                
+                const warningTime = state.settings.warningMinutes * 60 * 1000;
+                if (state.settings.warningEnabled && remaining <= warningTime) {
+                    document.getElementById('toiletStatus').textContent = `⏰ ${state.settings.warningMinutes} min warning!`;
+                    document.getElementById('toiletProgress').style.stroke = '#FFB300';
+                    document.getElementById('warningBanner').innerHTML = 
+                        `<div class="warning-banner">⏰ ${state.settings.warningMinutes} minutes remaining!</div>`;
+                    document.getElementById('warningBanner').style.display = 'block';
+                } else {
+                    document.getElementById('toiletStatus').textContent = 'All good! 💙';
+                    document.getElementById('toiletProgress').style.stroke = '#4FC3F7';
+                    document.getElementById('warningBanner').style.display = 'none';
+                }
+                
+                const waterHeight = (1 - progress) * 100;
+                document.getElementById('toiletWater').style.height = waterHeight + '%';
+            }
+            
+            const circumference = 565.48;
+            const offset = circumference * (1 - progress);
+            document.getElementById('toiletProgress').style.strokeDashoffset = offset;
+            
+            if (state.toiletLastLog) {
+                document.getElementById('toiletLastLog').textContent = `Last visit: ${new Date(state.toiletLastLog).toLocaleString()}`;
+            }
+        }
+
+        function updatePressureTimer() {
+            if (!state.pressureStarted) {
+                document.getElementById('pressureDisplay').textContent = '--:--:--';
+                document.getElementById('pressureStatus').textContent = 'Not started';
+                return;
+            }
+
+            const remaining = state.pressureEndTime - Date.now();
+            
+            if (remaining <= 0) {
+                const overdue = Math.abs(remaining);
+                document.getElementById('pressureDisplay').textContent = '0:00:00';
+                document.getElementById('pressureStatus').textContent = '⚠️ Time for release!';
+                document.getElementById('pressureOverdue').textContent = `OVERDUE: ${formatTime(overdue)}`;
+                document.getElementById('pressureOverdue').style.display = 'block';
+                
+                showNotification('🚨 Backbone', 'Time for pressure release!', true);
+            } else {
+                document.getElementById('pressureDisplay').textContent = formatTime(remaining);
+                document.getElementById('pressureStatus').textContent = 'On track 💙';
+                document.getElementById('pressureOverdue').style.display = 'none';
+            }
+            
+            if (state.pressureLastLog) {
+                document.getElementById('pressureLastLog').textContent = `Last release: ${new Date(state.pressureLastLog).toLocaleString()}`;
+            }
+        }
+
+        function logToiletVisit() {
+            const volume = parseInt(document.getElementById('volumeInput').value);
+            state.stats.toiletVisits++;
+            state.stats.totalVolume += volume;
+            state.toiletLastLog = Date.now();
+            state.history.unshift({
+                type: 'toilet',
+                time: new Date().toLocaleString(),
+                volume: volume
+            });
+            startToiletTimer();
+            document.getElementById('toiletModifier').style.display = 'none';
+            saveState();
+            updateStats();
+            showNotification('Logged!', `🚽 Toilet visit (${volume}ml)`, false);
+        }
+
+        function logPressureRelease() {
+            state.stats.pressureReleases++;
+            state.pressureLastLog = Date.now();
+            state.history.unshift({
+                type: 'pressure',
+                time: new Date().toLocaleString()
+            });
+            startPressureTimer();
+            saveState();
+            updateStats();
+            showNotification('Logged!', '🪑 Pressure release', false);
+        }
+
+        function logDrink(type) {
+            const modifier = ALCOHOL_MODIFIERS[type];
+            
+            if (state.toiletStarted && state.toiletEndTime) {
+                const modifierMs = modifier * 60 * 1000;
+                state.toiletEndTime -= modifierMs;
+                
+                const emoji = type === 'beer' ? '🍺' : type === 'wine' ? '🍷' : '🥃';
+                document.getElementById('toiletModifier').textContent = 
+                    `${emoji} Timer reduced by ${modifier} minutes!`;
+                document.getElementById('toiletModifier').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('toiletModifier').style.display = 'none';
+                }, 5000);
+            }
+            
+            state.stats.drinks++;
+            state.history.unshift({
+                type: 'drink',
+                drinkType: type,
+                time: new Date().toLocaleString(),
+                modifier: modifier
+            });
+            saveState();
+            updateStats();
+            
+            const emoji = type === 'beer' ? '🍺' : type === 'wine' ? '🍷' : '🥃';
+            showNotification('Drink Logged!', `${emoji} Timer reduced by ${modifier} min`, false);
+        }
+
+        function updateStats() {
+            document.getElementById('statToiletVisits').textContent = state.stats.toiletVisits;
+            document.getElementById('statTotalVolume').textContent = state.stats.totalVolume;
+            document.getElementById('statPressureReleases').textContent = state.stats.pressureReleases;
+            document.getElementById('statDrinks').textContent = state.stats.drinks;
+            
+            const historyHTML = state.history.slice(0, 10).map(item => {
+                let detail = '';
+                if (item.type === 'toilet') {
+                    detail = `🚽 Toilet visit (${item.volume}ml)`;
+                } else if (item.type === 'pressure') {
+                    detail = '🪑 Pressure release';
+                } else if (item.type === 'drink') {
+                    const emoji = item.drinkType === 'beer' ? '🍺' : item.drinkType === 'wine' ? '🍷' : '🥃';
+                    detail = `${emoji} ${item.drinkType.charAt(0).toUpperCase() + item.drinkType.slice(1)} (-${item.modifier}min)`;
+                }
+                return `
+                    <div class="history-item">
+                        <div class="history-time">${item.time}</div>
+                        <div class="history-detail">${detail}</div>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('historyList').innerHTML = historyHTML || '<p style="text-align: center; color: #6c757d; padding: 20px;">No history yet</p>';
+        }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            if (page === 'home') {
+                document.getElementById('homePage').classList.add('active');
+                document.querySelectorAll('.nav-btn')[0].classList.add('active');
+            } else if (page === 'stats') {
+                document.getElementById('statsPage').classList.add('active');
+                document.querySelectorAll('.nav-btn')[1].classList.add('active');
+            } else if (page === 'settings') {
+                document.getElementById('settingsPage').classList.add('active');
+                document.querySelectorAll('.nav-btn')[2].classList.add('active');
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Clear all data?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

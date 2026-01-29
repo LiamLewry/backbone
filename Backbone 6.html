@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#4FC3F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Backbone">
+    <meta name="apple-mobile-web-app-title" content="ParaPal">
     <link rel="manifest" href="manifest.json">
-    <title>Backbone - Health Manager</title>
+    <title>ParaPal - Your Health Companion</title>
     <style>
         * {
             margin: 0;
@@ -19,16 +19,16 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #f5f3f0 0%, #e8e4df 50%, #f0ece7 100%);
             min-height: 100vh;
             padding-bottom: 80px;
             overflow-x: hidden;
         }
 
         .header {
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 100%);
             padding: 16px 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -41,6 +41,25 @@
             font-size: 24px;
             font-weight: 700;
             color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .parapal-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #4FC3F7 0%, #03A9F4 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(79, 195, 247, 0.3);
+        }
+
+        .parapal-logo svg {
+            width: 24px;
+            height: 24px;
         }
 
         .header-right {
@@ -86,10 +105,11 @@
             overflow: hidden;
         }
 
-        /* Page transitions - smooth and bubbly */
+        /* Page transitions - smooth card cycling feel */
         .page {
             display: none;
-            animation: pageIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: pageIn 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            transform-origin: center center;
         }
 
         .page.active {
@@ -99,7 +119,7 @@
         @keyframes pageIn {
             0% {
                 opacity: 0;
-                transform: scale(0.92) translateY(20px);
+                transform: scale(0.94) translateY(12px);
             }
             100% {
                 opacity: 1;
@@ -107,34 +127,43 @@
             }
         }
 
+        /* Card-cycling animations - smooth physical feel */
         @keyframes slideInLeft {
             0% {
                 opacity: 0;
-                transform: translateX(60px) scale(0.95);
+                transform: translateX(100%) rotateY(-8deg) scale(0.92);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateX(30%) rotateY(-3deg) scale(0.96);
             }
             100% {
                 opacity: 1;
-                transform: translateX(0) scale(1);
+                transform: translateX(0) rotateY(0deg) scale(1);
             }
         }
 
         @keyframes slideInRight {
             0% {
                 opacity: 0;
-                transform: translateX(-60px) scale(0.95);
+                transform: translateX(-100%) rotateY(8deg) scale(0.92);
+            }
+            50% {
+                opacity: 0.7;
+                transform: translateX(-30%) rotateY(3deg) scale(0.96);
             }
             100% {
                 opacity: 1;
-                transform: translateX(0) scale(1);
+                transform: translateX(0) rotateY(0deg) scale(1);
             }
         }
 
         .page.slide-left {
-            animation: slideInLeft 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .page.slide-right {
-            animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         /* Swipe indicator dots */
@@ -161,11 +190,11 @@
         }
 
         .timer-section {
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f7f5f2 100%);
             border-radius: 24px;
             padding: 32px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
             text-align: center;
         }
 
@@ -211,7 +240,7 @@
             height: 180px;
             border-radius: 50%;
             overflow: hidden;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f5f3f0 0%, #ebe7e2 100%);
         }
 
         .water {
@@ -275,7 +304,7 @@
         }
 
         .last-log-box {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f0ece7 0%, #e8e4df 100%);
             padding: 12px;
             border-radius: 12px;
             margin-top: 16px;
@@ -284,11 +313,11 @@
         }
 
         .card {
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f7f5f2 100%);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         }
 
         .card-header {
@@ -355,8 +384,8 @@
             padding: 24px 16px;
             border: none;
             border-radius: 20px;
-            background: white;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #faf9f7 0%, #f0ece7 100%);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
             font-size: 20px;
             font-weight: 700;
             color: #2c3e50;
@@ -384,16 +413,16 @@
 
         .drink-buttons {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             margin-top: 16px;
         }
 
         .drink-btn {
             padding: 16px;
-            border: 2px solid #e9ecef;
+            border: 2px solid #e5e1dc;
             border-radius: 16px;
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f0ece7 100%);
             font-size: 24px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -413,7 +442,7 @@
         }
 
         .stat-box {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f0ece7 0%, #e8e4df 100%);
             padding: 16px;
             border-radius: 12px;
             text-align: center;
@@ -436,7 +465,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 100%);
             display: flex;
             justify-content: space-around;
             padding: 8px 0 12px;
@@ -457,6 +486,18 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
+        }
+
+        /* Thin black divider lines between nav tabs */
+        .nav-btn:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.12);
         }
 
         .nav-btn.active {
@@ -510,7 +551,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 100%);
             border-radius: 24px 24px 0 0;
             padding: 24px 20px 40px;
             z-index: 201;
@@ -648,11 +689,11 @@
 
         /* Big tappable medication cards */
         .med-card {
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 100%);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
             display: flex;
             align-items: center;
             gap: 16px;
@@ -767,7 +808,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 100%);
             border-radius: 24px 24px 0 0;
             padding: 24px 20px 40px;
             z-index: 201;
@@ -828,7 +869,7 @@
 
         .history-item {
             padding: 16px;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f0ece7 0%, #e8e4df 100%);
             border-radius: 12px;
             margin-bottom: 12px;
         }
@@ -918,7 +959,22 @@
 </head>
 <body>
     <div class="header">
-        <h1>🦴 Backbone</h1>
+        <h1>
+            <div class="parapal-logo">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Friendly robot face -->
+                    <rect x="4" y="6" width="16" height="13" rx="3" fill="white"/>
+                    <circle cx="9" cy="11" r="2" fill="#2c3e50"/>
+                    <circle cx="15" cy="11" r="2" fill="#2c3e50"/>
+                    <circle cx="9.5" cy="10.5" r="0.7" fill="white"/>
+                    <circle cx="15.5" cy="10.5" r="0.7" fill="white"/>
+                    <path d="M10 15 Q12 17 14 15" stroke="#2c3e50" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                    <rect x="10" y="3" width="4" height="3" rx="1" fill="white"/>
+                    <circle cx="12" cy="2.5" r="1.5" fill="#FFD54F"/>
+                </svg>
+            </div>
+            ParaPal
+        </h1>
         <div class="header-right">
             <div id="testBadge" class="test-badge" style="display: none;">TEST MODE</div>
             <button class="settings-btn" onclick="openSettings()">⚙️</button>
@@ -1001,13 +1057,14 @@
                 <!-- Buttons will be rendered by JS based on settings -->
             </div>
 
-            <!-- Alcohol buttons on Bladder page -->
+            <!-- Drinks section on Bladder page -->
             <div class="card" style="margin-top: 20px;">
                 <div class="card-header">
-                    <div class="card-icon">🍺</div>
-                    <div class="card-title">Log Drink (Reduces Timer)</div>
+                    <div class="card-icon">💧</div>
+                    <div class="card-title">Log Drink</div>
                 </div>
                 <div class="drink-buttons">
+                    <button class="drink-btn" onclick="logDrink('water')" style="border-color: #81D4FA;">💧<br><small style="font-size: 10px;">Water</small></button>
                     <button class="drink-btn" onclick="logDrink('beer')">🍺<br><small style="font-size: 10px;">-40min</small></button>
                     <button class="drink-btn" onclick="logDrink('wine')">🍷<br><small style="font-size: 10px;">-45min</small></button>
                     <button class="drink-btn" onclick="logDrink('spirits')">🥃<br><small style="font-size: 10px;">-55min</small></button>
@@ -1099,6 +1156,23 @@
                 <input type="checkbox" id="testModeToggle" onchange="toggleTestMode()">
                 <span class="slider"></span>
             </label>
+        </div>
+
+        <div class="section-title" style="margin-top: 20px;">Default Void Volume</div>
+        <div class="setting-row">
+            <div>
+                <div class="setting-label">Quick Log Default</div>
+                <div class="setting-desc">Pre-selected volume for logging</div>
+            </div>
+            <div class="interval-selector" id="defaultVoidSelector">
+                <button class="interval-option" data-volume="200" onclick="setDefaultVoidVolume(200)">200</button>
+                <button class="interval-option" data-volume="300" onclick="setDefaultVoidVolume(300)">300</button>
+                <button class="interval-option active" data-volume="400" onclick="setDefaultVoidVolume(400)">400</button>
+                <button class="interval-option" data-volume="500" onclick="setDefaultVoidVolume(500)">500</button>
+                <button class="interval-option" data-volume="600" onclick="setDefaultVoidVolume(600)">600</button>
+                <button class="interval-option" data-volume="700" onclick="setDefaultVoidVolume(700)">700</button>
+                <button class="interval-option" data-volume="800" onclick="setDefaultVoidVolume(800)">800</button>
+            </div>
         </div>
 
         <div class="section-title" style="margin-top: 20px;">Bladder Volume Buttons (ml)</div>
@@ -1195,7 +1269,9 @@
     </div>
 
     <script>
-        const ALCOHOL_MODIFIERS = {
+        // Drink modifiers (minutes reduced from bladder timer)
+        const DRINK_MODIFIERS = {
+            water: 0,    // Hydration only - no timer change
             beer: 40,
             wine: 45,
             spirits: 55
@@ -1212,7 +1288,8 @@
             settings: {
                 warningEnabled: true,
                 volumes: [200, 350, 600],
-                pressureInterval: 2
+                pressureInterval: 2,
+                defaultVoidVolume: 400
             },
             history: [],
             stats: {
@@ -1222,6 +1299,7 @@
                 drinks: 0
             },
             medications: [],
+            medicationLastReset: null,  // Track when meds were last reset
             warnings: {
                 thirty: false,
                 fifteen: false,
@@ -1239,12 +1317,42 @@
 
         function init() {
             loadState();
+            checkDailyMedicationReset();
             setupNotifications();
             setupSwipeNavigation();
             renderVolumeButtons();
+            updateDefaultVoidVolumeUI();
             updateDisplay();
             setInterval(updateDisplay, 1000);
             setInterval(checkAndSendNotifications, 5000);
+        }
+
+        // Check if we need to reset medication taken status for new day
+        function checkDailyMedicationReset() {
+            const today = new Date().toDateString();
+            if (state.medicationLastReset !== today) {
+                // Reset all medication taken status for the new day
+                state.medications.forEach(med => {
+                    med.taken = false;
+                    med.takenAt = null;
+                });
+                state.medicationLastReset = today;
+                saveState();
+                renderMedications();
+            }
+        }
+
+        // Set and update default void volume setting
+        function setDefaultVoidVolume(volume) {
+            state.settings.defaultVoidVolume = volume;
+            updateDefaultVoidVolumeUI();
+            saveState();
+        }
+
+        function updateDefaultVoidVolumeUI() {
+            document.querySelectorAll('#defaultVoidSelector .interval-option').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.volume) === state.settings.defaultVoidVolume);
+            });
         }
 
         function setupSwipeNavigation() {
@@ -1276,7 +1384,13 @@
         }
 
         function loadState() {
-            const saved = localStorage.getItem('backboneState');
+            // Check for old data key and migrate if needed
+            const oldSaved = localStorage.getItem('backboneState');
+            if (oldSaved) {
+                localStorage.setItem('parapalState', oldSaved);
+                localStorage.removeItem('backboneState');
+            }
+            const saved = localStorage.getItem('parapalState');
             if (saved) {
                 const loaded = JSON.parse(saved);
                 state = { ...state, ...loaded };
@@ -1308,7 +1422,7 @@
         }
 
         function saveState() {
-            localStorage.setItem('backboneState', JSON.stringify(state));
+            localStorage.setItem('parapalState', JSON.stringify(state));
         }
 
         function saveSettings() {
@@ -1379,7 +1493,7 @@
                 const permission = await Notification.requestPermission();
                 updateNotificationStatus(permission);
                 if (permission === 'granted') {
-                    showNotification('Backbone', 'Notifications enabled!', false);
+                    showNotification('ParaPal', 'Notifications enabled!', false);
                 }
             }
         }
@@ -1406,7 +1520,7 @@
                     body: body,
                     vibrate: vibrateLong ? [1000, 500, 1000, 500, 1000] : [200, 100, 200],
                     requireInteraction: vibrateLong,
-                    tag: 'backbone-alert',
+                    tag: 'parapal-alert',
                     renotify: true,
                     silent: vibrateLong
                 });
@@ -1434,19 +1548,19 @@
             const remaining = state.toiletEndTime - Date.now();
 
             if (remaining <= 30 * 60 * 1000 && remaining > 15 * 60 * 1000 && !state.warnings.thirty) {
-                showNotification('⏰ Backbone', 'Go in 30 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 30 minutes', false);
                 state.warnings.thirty = true;
                 saveState();
             }
 
             if (remaining <= 15 * 60 * 1000 && remaining > 5 * 60 * 1000 && !state.warnings.fifteen) {
-                showNotification('⏰ Backbone', 'Go in 15 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 15 minutes', false);
                 state.warnings.fifteen = true;
                 saveState();
             }
 
             if (remaining <= 5 * 60 * 1000 && remaining > 0 && !state.warnings.five) {
-                showNotification('⏰ Backbone', 'Go in 5 minutes', false);
+                showNotification('⏰ ParaPal', 'Go in 5 minutes', false);
                 state.warnings.five = true;
                 saveState();
             }
@@ -1610,13 +1724,14 @@
         }
 
         function logDrink(type) {
-            const modifier = ALCOHOL_MODIFIERS[type];
+            const modifier = DRINK_MODIFIERS[type];
+            const emoji = type === 'water' ? '💧' : type === 'beer' ? '🍺' : type === 'wine' ? '🍷' : '🥃';
 
-            if (state.toiletStarted && state.toiletEndTime) {
+            // Only modify timer if it's an alcoholic drink (modifier > 0)
+            if (modifier > 0 && state.toiletStarted && state.toiletEndTime) {
                 const modifierMs = modifier * 60 * 1000;
                 state.toiletEndTime -= modifierMs;
 
-                const emoji = type === 'beer' ? '🍺' : type === 'wine' ? '🍷' : '🥃';
                 document.getElementById('toiletModifier').textContent =
                     `${emoji} Timer reduced by ${modifier} minutes!`;
                 document.getElementById('toiletModifier').style.display = 'block';
@@ -1636,8 +1751,12 @@
             saveState();
             updateStats();
 
-            const emoji = type === 'beer' ? '🍺' : type === 'wine' ? '🍷' : '🥃';
-            showNotification('Drink Logged!', `${emoji} Timer reduced by ${modifier} min`, false);
+            // Different notification for water vs alcohol
+            if (type === 'water') {
+                showNotification('Hydration!', `${emoji} Water logged - stay hydrated!`, false);
+            } else {
+                showNotification('Drink Logged!', `${emoji} Timer reduced by ${modifier} min`, false);
+            }
         }
 
         function updateStats() {
@@ -1653,8 +1772,13 @@
                 } else if (item.type === 'pressure') {
                     detail = '🪑 Pressure release';
                 } else if (item.type === 'drink') {
-                    const emoji = item.drinkType === 'beer' ? '🍺' : item.drinkType === 'wine' ? '🍷' : '🥃';
-                    detail = `${emoji} ${item.drinkType.charAt(0).toUpperCase() + item.drinkType.slice(1)} (-${item.modifier}min)`;
+                    const emoji = item.drinkType === 'water' ? '💧' : item.drinkType === 'beer' ? '🍺' : item.drinkType === 'wine' ? '🍷' : '🥃';
+                    const drinkName = item.drinkType.charAt(0).toUpperCase() + item.drinkType.slice(1);
+                    if (item.drinkType === 'water') {
+                        detail = `${emoji} ${drinkName}`;
+                    } else {
+                        detail = `${emoji} ${drinkName} (-${item.modifier}min)`;
+                    }
                 }
                 return `
                     <div class="history-item">

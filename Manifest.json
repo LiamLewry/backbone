@@ -2,7 +2,7 @@
   "name": "ParaPal - Your Health Companion",
   "short_name": "ParaPal",
   "description": "Friendly health companion for wheelchair users - bladder management, pressure relief, hydration tracking, and medication reminders",
-  "start_url": "./Backbone 6.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f5f3f0",
   "theme_color": "#4FC3F7",
